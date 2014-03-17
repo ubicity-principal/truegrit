@@ -11,6 +11,12 @@ final class Cell extends Area implements Comparable< Cell> {
     
     public volatile double percentage;
 
+    //lat, lon format unless specified otherwise; 
+    //meant for direct use with elasticsearch Java API FilterBuilder
+    protected long[] topLeft;
+    protected long[] bottomRight;
+    
+    
     @Override
     /**
      * 
