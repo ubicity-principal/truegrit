@@ -2,6 +2,7 @@ package at.ac.ait.ubicity.truegrit;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.Set;
@@ -19,6 +20,8 @@ public final class Analyzer   {
     
     public final static int DEFAULT_TOP_N = 1;
     
+    public final static int DEFAULT_ZOOM_FACTOR = 10;
+    
     
     //crude model of "moment" of current Analyzer run
     static long NOW;
@@ -31,26 +34,39 @@ public final class Analyzer   {
     
     static int TOP_N;
     
+    
+    //factor by which to zoom in on cells, when we re-cast them as Area and divide them into a new, 
+    //finer Cell grid. The zoom factor is **side-oriented**, and * not * surface-oriented;
+    //i.e., a zoom factor of 3 will divide a Cell into 3 * 3 = 9 new Cells !! 
+    
+    static int ZOOM_FACTOR;
+    
+    
+    
     static  {
         logger.setLevel( Level.ALL );
-    }
-    
-    public static void main( String[] args )  {
-        
         Properties props = new Properties();
         try {
             props.load( new FileInputStream( new File( DEFAULT_PROPS_FILE )));
             TOP_N = Integer.parseInt( props.getProperty( "topn" )  );
+            ZOOM_FACTOR = Integer.parseInt( props.getProperty( "zoomfactor" ) );
         }
-        catch( Throwable t )    {
+        catch( IOException | NumberFormatException t )    {
             TOP_N = DEFAULT_TOP_N;
+            ZOOM_FACTOR = DEFAULT_ZOOM_FACTOR;
             logger.warning( t.getMessage() );
         }
-        
-        
-        Area a = Area.getEurope();
+    }
     
-        initializeTimeSlots();
+    
+    
+    public static void main( String[] args )  {
+        
+        
+        
+        Area a = Area.EUROPE;
+    
+        a.initializeTimeSlots();
         
     }
     
@@ -62,33 +78,26 @@ public final class Analyzer   {
         
         _a.populate( oneHourBefore, twoHoursBefore );
         SortedSet< Cell > cellsForArea = _a.getCells();
-        
-        for( Cell c: cellsForArea ) {
+        cellsForArea.stream().forEach((c) -> {
             _a.computeHourlyDeltaFor( c );
-        }
+        });
+        
         double _threshold = _a.getOverallThreshold();
         
         SortedSet< Cell > cellsAboveThreshold = getCellsAboveThreshold( cellsForArea, _threshold );
         
         if( cellsAboveThreshold.size() == 0 ) return cellsForArea;
         else    {
-            for( Cell _c: cellsAboveThreshold ) {
+            cellsAboveThreshold.stream().forEach((_c) -> {
                 result.addAll( analyze( ( Area )  _c ) );
-                
-            }
+            });
         }
         return result;
     }
     
     
     
-    private static void computeHourlyDeltaFor(Cell c) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    private static void initializeTimeSlots() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     
     private static SortedSet<Cell> getCellsAboveThreshold( SortedSet< Cell > cells, double _threshold) {
