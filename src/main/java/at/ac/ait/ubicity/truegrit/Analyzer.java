@@ -77,8 +77,10 @@ public final class Analyzer   {
         
         
         _a.populate( oneHourBefore, twoHoursBefore );
+        
         SortedSet< Cell > cellsForArea = _a.getCells();
         cellsForArea.stream().forEach((c) -> {
+            //we could merge this functionality into the Area.populate() method body...? 
             _a.computeHourlyDeltaFor( c );
         });
         
@@ -86,10 +88,13 @@ public final class Analyzer   {
         
         SortedSet< Cell > cellsAboveThreshold = getCellsAboveThreshold( cellsForArea, _threshold );
         
+        //stopping criterium for recursive calls is here:
         if( cellsAboveThreshold.size() == 0 ) return cellsForArea;
         else    {
             cellsAboveThreshold.stream().forEach((_c) -> {
-                result.addAll( analyze( ( Area )  _c ) );
+                //zoom in upon the cell and treat it as a new Area just before
+                //initiating the next recursive call to analyze():
+                result.addAll( analyze(  _c.zoom() ) );
             });
         }
         return result;
