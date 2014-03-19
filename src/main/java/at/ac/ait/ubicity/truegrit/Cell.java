@@ -8,7 +8,7 @@ import java.util.TreeSet;
  *
  * @author jan
  */
-final class Cell extends Area implements Comparable< Cell> {
+public final class Cell extends Area implements Comparable< Cell> {
     
     
     public volatile double percentage;
@@ -26,6 +26,14 @@ final class Cell extends Area implements Comparable< Cell> {
         if ( o == null ) return false;
         if( ! ( o instanceof Cell) ) return false;
         return this.percentage ==  ( ( Cell ) o ).percentage ;
+    }
+    
+    protected Cell( double[] _topLeft, double[] _bottomRight )  {
+        super( _topLeft, _bottomRight );
+    }
+    
+    private Cell()  {
+        
     }
 
     

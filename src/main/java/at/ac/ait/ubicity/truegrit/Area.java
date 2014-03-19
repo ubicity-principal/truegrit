@@ -30,7 +30,19 @@ public class Area {
     * TODO TODO TODO place initialization code for various pre-defined Area instances here ! 
     */
     static  {
-        EUROPE = null;
+        /* lat-lon format !
+        * This Area for Europe comprises all of continental Europe down south to the Rock of Gibraltar,
+        * and up north to the North Cape. It runs from the westernmost point of Ireland deeply into Russia. 
+        * As such, it comprises a fair amount of water ( some Atlantic Ocean, all of the Gulf of Biscay, 
+        * the Irish Sea, Tyrrhenian Sea, Adriatic Sea and Aegaean Sea, as well as the entire Black Sea and North Sea. 
+        * It would be nice to have a class-static way that, before drilling down upon a Cell, checks whether it is 
+        * watery or not.... 
+        */
+        double[] europeTopLeft = { 71.1834, -10.4730 };
+        double[] europeBottomRight = { 36.0006, 36.2200 };
+        EUROPE = new Area( europeTopLeft, europeBottomRight );
+
+        
         ASIA = null;
         AFRICA = null;
         MIDDLE_EAST = null;
@@ -47,6 +59,16 @@ public class Area {
     //meant for direct use with elasticsearch Java API FilterBuilder
     protected double[] topLeft;
     protected double[] bottomRight;
+    
+    
+    protected Area( double[] _topLeft, double[] _bottomRight )    {
+        topLeft = _topLeft;
+        bottomRight = _bottomRight;
+    }
+    
+    protected Area()    {
+        
+    }
     
     /**
      * TODO TODO write a sensible algorithm for dividing up any Area in equally-sized (sub-Areals or ) Cells
